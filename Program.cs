@@ -6,9 +6,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+
 // Add database context
-builder.Services.AddDbContext<TodoContext>(opt =>
-    opt.UseInMemoryDatabase("TodoList"));
+builder.Services.AddDbContext<TodoContext>(
+        options => options.UseNpgsql(builder.Configuration.GetConnectionString("WebApiDatabase")));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -21,9 +22,16 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-}
 
-app.UseHttpsRedirection();
+
+    //builder.Services.AddDbContext<TodoContext>(options =>
+    // options.UseSqlite(
+    //     Configuration.GetConnectionString("RazorPagesMovieContext")));
+
+}
+else
+
+    app.UseHttpsRedirection();
 
 app.UseAuthorization();
 

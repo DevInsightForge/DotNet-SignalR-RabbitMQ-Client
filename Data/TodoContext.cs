@@ -9,5 +9,8 @@ public class TodoContext : DbContext
     {
     }
 
-    public DbSet<TodoItem> TodoItems { get; set; } = null!;
+    public DbSet<Chat> Chats { get; set; } = null!;
+    public DbSet<Message> Messages { get; set; } = null!;
+    public DbSet<User> Users { get; set; } = null!;
+    public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
 }
