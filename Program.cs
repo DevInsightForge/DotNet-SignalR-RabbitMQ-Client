@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using test_dot.Data;
+using test_dot.Services;
 using test_dot.SignalR;
+using test_dot.Workers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +13,16 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
+
+builder.Services.Configure<RabbitMqConfiguration>(a=>builder.Configuration.GetSection(nameof(RabbitMqConfiguration)).Bind(a));
+builder.Services.AddSingleton<IRabbitMqService, RabbitMqService>();
+
+
+builder.Services.AddSingleton<IBookingConsumerService, BookingConsumerService>();
+
+builder.Services.AddSingleton<INotificationHub, NotificationHub>();
+
+builder.Services.AddHostedService<ConsumerHostedService>();
 
 
 builder.Services.AddCors(options =>
@@ -47,7 +59,10 @@ app.UseAuthorization();
 app.UseCors();
 
 app.MapControllers();
-app.MapHub<NotificationHub>("/notification");
+app.MapHub<NotificationHub>("/notification", option =>
+{
+    option.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransportType.ServerSentEvents;
+});
 app.MapHub<DateTimeHub>("/dateTime");
 
 app.Run();

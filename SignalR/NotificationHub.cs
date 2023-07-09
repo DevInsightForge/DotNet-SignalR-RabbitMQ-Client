@@ -2,14 +2,24 @@
 
 namespace test_dot.SignalR
 {
-    public class NotificationHub : Hub
+    public interface INotificationHub
+    {
+        Task SendNotification(string notification);
+    }
+    public class NotificationHub : Hub, INotificationHub
 
     {
         //private static Dictionary<string, string> userConnectionMap = new Dictionary<string, string>();
+        private readonly IHubContext<NotificationHub> _context;
+
+        public NotificationHub(IHubContext<NotificationHub> context)
+        {
+            _context = context;
+        }
 
         public async Task SendNotification(string notification)
         {
-            await Clients.All.SendAsync("ReceiveNotification", notification);
+            await _context.Clients.All.SendAsync("ReceiveNotification", notification);
         }
 
         //public override async Task OnConnectedAsync()
